@@ -1,15 +1,27 @@
 package service
 
-import "pddikti-cms/internal/module/z_template_v2/ports"
+import (
+	"pddikti-cms/internal/module/user/entity"
+	"pddikti-cms/internal/module/user/ports"
+)
 
-var _ ports.XxxService = &xxxService{}
 
-type xxxService struct {
-	repo ports.XxxRepository
+var _ ports.UserService = &userService{}
+
+type userService struct {
+	repo ports.UserRepository
 }
 
-func NewXxxService(repo ports.XxxRepository) *xxxService {
-	return &xxxService{
+func NewUserService(repo ports.UserRepository) *userService {
+	return &userService{
 		repo: repo,
 	}
+}
+
+func (s *userService) Login(req *entity.LoginRequest) (*entity.LoginResponse, error) {
+	return nil, nil
+}
+
+func (s *userService) Register(req *entity.RegisterRequest) error {
+	return nil
 }
