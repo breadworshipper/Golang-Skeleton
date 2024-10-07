@@ -1,14 +1,25 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"pddikti-cms/internal/module/user/ports"
 
-type xxxHandler struct {
+	"github.com/gofiber/fiber/v2"
+)
+
+type userHandler struct {
+	service ports.UserService
 }
 
-func NewXXXHandler() *xxxHandler {
-	return &xxxHandler{}
+func NewUserHandler(s ports.UserService) *userHandler {
+	return &userHandler{
+		service: s,
+	}
 }
 
-func (h *xxxHandler) Register(router fiber.Router) {
+func (h *userHandler) Register(c *fiber.Ctx) error {
+	return nil
+}
 
+func (h *userHandler) Login(c *fiber.Ctx) error {
+	return nil
 }
