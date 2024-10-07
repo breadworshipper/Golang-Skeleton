@@ -1,7 +1,17 @@
 package ports
 
-type XxxRepository interface {
+import (
+	"pddikti-cms/internal/module/user/entity"
+)
+
+type UserRepository interface {
+	EmailExist(email string) bool
+	Register(user *entity.User) error
+	GetUserByEmail(email string) (*entity.User, error)
+	GetUserById(id string) (*entity.User, error)
 }
 
-type XxxService interface {
+type UserService interface {
+	Login(req *entity.LoginRequest) (*entity.LoginResponse, error)
+	Register(req *entity.RegisterRequest) error
 }
