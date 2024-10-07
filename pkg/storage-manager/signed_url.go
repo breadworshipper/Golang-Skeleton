@@ -5,8 +5,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"monster-laut-depok/internal/infrastructure/config"
 	"net/url"
+	"pddikti-cms/internal/infrastructure/config"
 	"strconv"
 	"time"
 )

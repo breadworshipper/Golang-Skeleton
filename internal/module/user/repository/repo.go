@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"monster-laut-depok/internal/module/z_template_v2/ports"
-
 	"github.com/jmoiron/sqlx"
 )
 

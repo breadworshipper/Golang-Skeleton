@@ -1,12 +1,12 @@
 package route
 
 import (
-	// integlocalstorage "monster-laut-depok/internal/integration/localstorage"
-	// m "monster-laut-depok/internal/middleware"
+	// integlocalstorage "pddikti-cms/internal/integration/localstorage"
+	// m "pddikti-cms/internal/middleware"
 
-	"monster-laut-depok/pkg/response"
 	"os"
 	"path/filepath"
+	"pddikti-cms/pkg/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"

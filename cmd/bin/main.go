@@ -1,10 +1,10 @@
 package main
 
 import (
-	"monster-laut-depok/cmd"
-	"monster-laut-depok/internal/adapter"
-	"monster-laut-depok/internal/infrastructure/config"
 	"os"
+	"pddikti-cms/cmd"
+	"pddikti-cms/internal/adapter"
+	"pddikti-cms/internal/infrastructure/config"
 	"strings"
 
 	"flag"

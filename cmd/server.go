@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"flag"
-	"monster-laut-depok/internal/adapter"
-	"monster-laut-depok/internal/infrastructure"
-	"monster-laut-depok/internal/infrastructure/config"
-	"monster-laut-depok/internal/route"
 	"os"
 	"os/signal"
+	"pddikti-cms/internal/adapter"
+	"pddikti-cms/internal/infrastructure"
+	"pddikti-cms/internal/infrastructure/config"
+	"pddikti-cms/internal/route"
 	"runtime"
 	"syscall"
 	"time"

@@ -1,7 +1,7 @@
 package config
 
 import (
-	"monster-laut-depok/pkg/config"
+	"pddikti-cms/pkg/config"
 	"sync"
 
 	"github.com/rs/zerolog/log"

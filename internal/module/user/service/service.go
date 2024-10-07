@@ -1,6 +1,6 @@
 package service
 
-import "monster-laut-depok/internal/module/z_template_v2/ports"
+import "pddikti-cms/internal/module/z_template_v2/ports"
 
 var _ ports.XxxService = &xxxService{}
 

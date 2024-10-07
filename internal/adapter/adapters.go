@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	// import "monster-laut-depok/internal/pkg/validator"
+	// import "pddikti-cms/internal/pkg/validator"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/minio/minio-go/v7"
@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	Adapters 	*Adapter
-	options    	[]Option
+	Adapters *Adapter
+	options  []Option
 )
 
 type Option interface {

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"monster-laut-depok/pkg/jwthandler"
+	"pddikti-cms/pkg/jwthandler"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"

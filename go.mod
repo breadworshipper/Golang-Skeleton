@@ -1,4 +1,4 @@
-module monster-laut-depok
+module pddikti-cms
 
 go 1.22.0
 

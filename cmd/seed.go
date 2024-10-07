@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"flag"
-	"monster-laut-depok/db/seeds"
-	"monster-laut-depok/internal/adapter"
+	"pddikti-cms/db/seeds"
+	"pddikti-cms/internal/adapter"
 
 	"github.com/rs/zerolog/log"
 )

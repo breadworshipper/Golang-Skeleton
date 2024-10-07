@@ -4,7 +4,7 @@ import (
 	// "log"
 
 	"fmt"
-	"monster-laut-depok/internal/infrastructure/config"
+	"pddikti-cms/internal/infrastructure/config"
 
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog/log"
@@ -28,8 +28,8 @@ func (p *postgres) Start(a *Adapter) {
 	dbSSLMode := config.Envs.Postgres.SslMode
 	dbPort := config.Envs.Postgres.Port
 
-	connectionString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", 
-	dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode)
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		dbHost, dbPort, dbUser, dbPassword, dbName, dbSSLMode)
 	db, err := gorm.Open(pg.Open(connectionString), &gorm.Config{})
 	if err != nil {
 		log.Fatal().Err(err).Msg("Error connecting to Postgres")

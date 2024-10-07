@@ -1,6 +1,6 @@
 package response
 
-import "monster-laut-depok/pkg/errmsg"
+import "pddikti-cms/pkg/errmsg"
 
 type Response map[string]any
 
