@@ -1,25 +1,24 @@
 package entity
 
-type XxxRequest struct {
-}
+import "time"
 
-type XxxResponse struct {
-}
+// type XxxRequest struct {
+// }
 
-type XxxResult struct {
-}
+// type XxxResponse struct {
+// }
 
-const (
-	RoleSuperAdmin = "super-admin"
-	RoleAdmin      = "admin"
-)
-
-type Role string
+// type XxxResult struct {
+// }
 
 type User struct {
-	ID       int
-	Username string
-	Password string
-	RoleID   int
-	Role 	Role
+	ID        int        `json:"id" gorm:"primaryKey"`
+	FullName  string     `json:"full_name" validate:"required"`
+	Username  string     `json:"username" validate:"required"`
+	Email     string     `json:"email" validate:"required,email"`
+	Password  string     `json:"password" validate:"required"`
+	Role      string     `json:"role" validate:"required,oneof=super-admin admin"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdateAt  time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }
