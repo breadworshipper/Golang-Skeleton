@@ -8,27 +8,44 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func GenerateTokenString(payload CostumClaimsPayload) (string, error) {
-	claims := CustomClaims{
+func GenerateTokenPairString(payload CostumClaimsPayload) (string, string, error) {
+	accessClaims := CustomClaims{
 		UserId: payload.UserId,
 		Role:   payload.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   "user",
-			Issuer:    "mm-pddikti-cms",
-			ExpiresAt: jwt.NewNumericDate(payload.TokenExpiration),
+			Issuer:    config.Envs.App.Name,
+			ExpiresAt: jwt.NewNumericDate(payload.AccessTokenExpiration),
 			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 			NotBefore: jwt.NewNumericDate(time.Now().UTC()),
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
-	tokenString, err := token.SignedString([]byte(config.Envs.Guard.JwtPrivateKey))
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &accessClaims)
+	accessTokenString, err := accessToken.SignedString([]byte(config.Envs.Guard.JwtPrivateKey))
 	if err != nil {
-		log.Error().Err(err).Msg("jwthandler::GenerateTokenString - Error while signing token")
-		return "", err
+		log.Error().Err(err).Msg("jwthandler::GenerateTokenString - Error while signing access token")
+		return "", "", err
 	}
 
-	return tokenString, nil
+	refreshClaims := CustomClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Subject:   "user",
+			Issuer:    config.Envs.App.Name,
+			ExpiresAt: jwt.NewNumericDate(payload.RefreshTokenExpiration),
+			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+			NotBefore: jwt.NewNumericDate(time.Now().UTC()),
+		},
+	}
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &refreshClaims)
+	refreshTokenString, err := refreshToken.SignedString([]byte(config.Envs.Guard.JwtPrivateKey))
+	if err != nil {
+		log.Error().Err(err).Msg("jwthandler::GenerateTokenString - Error while signing refresh token")
+		return "", "", err
+	}
+
+	return accessTokenString, refreshTokenString, nil
 }
 
 func ParseTokenString(tokenString string) (*CustomClaims, error) {

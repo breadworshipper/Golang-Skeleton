@@ -1,31 +1,26 @@
 package jwthandler
 
 import (
+	"mm-pddikti-cms/internal/module/user/entity"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 type CustomClaims struct {
-	UserId string `json:"user_id"`
-	Role   string `json:"role"`
-	jwt.RegisteredClaims
-}
-
-type CostumClaimsWs struct {
-	UserId string `json:"user_id"`
-	Role   string `json:"role"`
+	UserId   uuid.UUID   `json:"id"`
+	Username string      `json:"username"`
+	Email    string      `json:"email"`
+	Role     entity.Role `json:"role"`
 	jwt.RegisteredClaims
 }
 
 type CostumClaimsPayload struct {
-	UserId          string    `json:"user_id"`
-	Role            string    `json:"role"`
-	TokenExpiration time.Time `json:"token_expiration"`
-}
-
-type CostumClaimsPayloadWs struct {
-	UserId          string    `json:"user_id"`
-	Role            string    `json:"role"`
-	TokenExpiration time.Time `json:"token_expiration"`
+	UserId                 uuid.UUID   `json:"id"`
+	Username               string      `json:"username"`
+	Email                  string      `json:"email"`
+	Role                   entity.Role `json:"role"`
+	AccessTokenExpiration  time.Time   `json:"access_token_expiration"`
+	RefreshTokenExpiration time.Time   `json:"refresh_token_expiration"`
 }
