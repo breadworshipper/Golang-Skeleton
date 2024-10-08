@@ -60,12 +60,19 @@ func RunServer(cmd *flag.FlagSet, args []string) {
 	app.Static("/storage/public", envs.App.LocalStoragePublicPath)
 
 	// Application Middlewares
-	if envs.App.Environtment == "production" {
-		app.Use(limiter.New(limiter.Config{
-			Max:        50,
-			Expiration: 30 * time.Second,
-		}))
-	}
+	app.Use(limiter.New(limiter.Config{
+		Next: func(c *fiber.Ctx) bool {
+			return c.IP() == "127.0.0.1"
+		},
+		Max:        50,
+		Expiration: 30 * time.Second,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"message": "Too many requests",
+				"success": false,
+			})
+		},
+	}))
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
