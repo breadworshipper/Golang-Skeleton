@@ -248,10 +248,14 @@ func (s *Seed) adminUsersSeed(total int) {
 		FullName string `faker:"name"`
 		Username string `faker:"username,unique"`
 		Email    string `faker:"email,unique"`
-		Password string `faker:"password"`
 	}
 
 	var users []user_entity.User
+	password, err := pkg.HashPassword("admin123")
+	if err != nil {
+		log.Info().Msg("Failed to hash password")
+		return
+	}
 
 	for i := 1; i <= total; i++ {
 		fakeUser := UserFaker{}
@@ -272,7 +276,7 @@ func (s *Seed) adminUsersSeed(total int) {
 			FullName:  fakeUser.FullName,
 			Username:  fakeUser.Username,
 			Email:     fakeUser.Email,
-			Password:  fakeUser.Password,
+			Password:  password,
 			Role:      user_entity.RoleAdmin,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
@@ -288,7 +292,7 @@ func (s *Seed) adminUsersSeed(total int) {
 		return
 	}
 
-	err := tx.Create(&users).Error
+	err = tx.Create(&users).Error
 	if err != nil {
 		log.Info().Msg("users table (admin) seed failed: " + err.Error())
 		tx.Rollback()
