@@ -2,10 +2,10 @@ package cmd
 
 // import (
 // 	"flag"
-// 	"pddikti-cms/internal/adapter"
-// 	"pddikti-cms/internal/infrastructure"
-// 	"pddikti-cms/internal/infrastructure/config"
-// 	"pddikti-cms/internal/middleware"
+// 	"mm-pddikti-cms/internal/adapter"
+// 	"mm-pddikti-cms/internal/infrastructure"
+// 	"mm-pddikti-cms/internal/infrastructure/config"
+// 	"mm-pddikti-cms/internal/middleware"
 // 	"net/http"
 // 	"os"
 // 	"os/signal"

@@ -1,10 +1,10 @@
 package main
 
 import (
+	"mm-pddikti-cms/cmd"
+	"mm-pddikti-cms/internal/adapter"
+	"mm-pddikti-cms/internal/infrastructure/config"
 	"os"
-	"pddikti-cms/cmd"
-	"pddikti-cms/internal/adapter"
-	"pddikti-cms/internal/infrastructure/config"
 	"strings"
 
 	"flag"

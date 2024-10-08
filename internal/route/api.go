@@ -1,12 +1,12 @@
 package route
 
 import (
-	// integlocalstorage "pddikti-cms/internal/integration/localstorage"
-	// m "pddikti-cms/internal/middleware"
+	// integlocalstorage "mm-pddikti-cms/internal/integration/localstorage"
+	// m "mm-pddikti-cms/internal/middleware"
 
+	"mm-pddikti-cms/pkg/response"
 	"os"
 	"path/filepath"
-	"pddikti-cms/pkg/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	// import "pddikti-cms/internal/pkg/validator"
+	// import "mm-pddikti-cms/internal/pkg/validator"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/minio/minio-go/v7"

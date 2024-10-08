@@ -3,8 +3,8 @@ package middleware
 import (
 	"context"
 	"errors"
+	"mm-pddikti-cms/pkg/jwthandler"
 	"net/http"
-	"pddikti-cms/pkg/jwthandler"
 
 	"github.com/rs/zerolog/log"
 )

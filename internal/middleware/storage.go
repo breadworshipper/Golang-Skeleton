@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"pddikti-cms/internal/infrastructure/config"
+	"mm-pddikti-cms/internal/infrastructure/config"
 	"strconv"
 	"time"
 

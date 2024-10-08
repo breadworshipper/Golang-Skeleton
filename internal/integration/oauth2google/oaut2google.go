@@ -3,7 +3,7 @@ package integration
 import (
 	"context"
 	"encoding/json"
-	"pddikti-cms/internal/integration/oauth2google/entity"
+	"mm-pddikti-cms/internal/integration/oauth2google/entity"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"

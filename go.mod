@@ -1,4 +1,4 @@
-module pddikti-cms
+module mm-pddikti-cms
 
 go 1.22.0
 

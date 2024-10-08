@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"flag"
-	"pddikti-cms/db/seeds"
-	"pddikti-cms/internal/adapter"
+	"mm-pddikti-cms/db/seeds"
+	"mm-pddikti-cms/internal/adapter"
 
 	"github.com/rs/zerolog/log"
 )

@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"flag"
+	"mm-pddikti-cms/internal/adapter"
+	"mm-pddikti-cms/internal/infrastructure"
+	"mm-pddikti-cms/internal/infrastructure/config"
+	"mm-pddikti-cms/internal/route"
 	"os"
 	"os/signal"
-	"pddikti-cms/internal/adapter"
-	"pddikti-cms/internal/infrastructure"
-	"pddikti-cms/internal/infrastructure/config"
-	"pddikti-cms/internal/route"
 	"runtime"
 	"syscall"
 	"time"

@@ -1,6 +1,6 @@
 package service
 
-import "pddikti-cms/internal/module/z_template_v2/ports"
+import "mm-pddikti-cms/internal/module/z_template_v2/ports"
 
 var _ ports.XxxService = &xxxService{}
 

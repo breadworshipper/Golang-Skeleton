@@ -1,8 +1,8 @@
 package seeds
 
 import (
+	"mm-pddikti-cms/internal/adapter"
 	"os"
-	"pddikti-cms/internal/adapter"
 
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"

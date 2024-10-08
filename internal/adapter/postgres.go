@@ -4,7 +4,7 @@ import (
 	// "log"
 
 	"fmt"
-	"pddikti-cms/internal/infrastructure/config"
+	"mm-pddikti-cms/internal/infrastructure/config"
 
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog/log"

@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"pddikti-cms/pkg/jwthandler"
+	"mm-pddikti-cms/pkg/jwthandler"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"

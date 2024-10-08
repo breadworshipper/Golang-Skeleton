@@ -1,6 +1,6 @@
 package response
 
-import "pddikti-cms/pkg/errmsg"
+import "mm-pddikti-cms/pkg/errmsg"
 
 type Response map[string]any
 

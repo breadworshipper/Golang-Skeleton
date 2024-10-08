@@ -1,7 +1,7 @@
 package config
 
 import (
-	"pddikti-cms/pkg/config"
+	"mm-pddikti-cms/pkg/config"
 	"sync"
 
 	"github.com/rs/zerolog/log"

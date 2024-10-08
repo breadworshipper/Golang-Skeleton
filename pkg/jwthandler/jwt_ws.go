@@ -1,7 +1,7 @@
 package jwthandler
 
 import (
-	"pddikti-cms/internal/infrastructure/config"
+	"mm-pddikti-cms/internal/infrastructure/config"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -18,7 +18,7 @@ func GenerateEphemeralToken(p CostumClaimsPayloadWs) (string, error) {
 		Role:   p.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject:   "user",
-			Issuer:    "pddikti-cms",
+			Issuer:    "mm-pddikti-cms",
 			ExpiresAt: jwt.NewNumericDate(exp),
 			IssuedAt:  jwt.NewNumericDate(now),
 			NotBefore: jwt.NewNumericDate(now),
