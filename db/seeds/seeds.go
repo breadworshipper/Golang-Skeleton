@@ -8,6 +8,7 @@ import (
 	"mm-pddikti-cms/pkg"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
@@ -243,25 +244,40 @@ func (s *Seed) superAdminUserSeed() {
 }
 
 func (s *Seed) adminUsersSeed(total int) {
-	type User struct {
-		ID        string `faker:"uuid_hyphenated"`
-		FullName  string `faker:"name"`
-		Username  string `faker:"username,unique"`
-		Email     string `faker:"email,unique"`
-		Password  string `faker:"password"`
-		Role      user_entity.Role
-		CreatedAt string `faker:"timestamp"`
-		UpdateAt  string `faker:"timestamp"`
+	type UserFaker struct {
+		FullName string `faker:"name"`
+		Username string `faker:"username,unique"`
+		Email    string `faker:"email,unique"`
+		Password string `faker:"password"`
 	}
 
-	var users []User
+	var users []user_entity.User
+
 	for i := 1; i <= total; i++ {
-		user := User{}
-		err := faker.FakeData(&user)
+		fakeUser := UserFaker{}
+		err := faker.FakeData(&fakeUser)
 		if err != nil {
 			fmt.Println(err)
+			continue
 		}
-		user.Role = user_entity.RoleAdmin
+
+		newUUID, err := uuid.NewUUID()
+		if err != nil {
+			log.Info().Msg("Failed to generate UUID")
+			return
+		}
+
+		user := user_entity.User{
+			ID:        newUUID,
+			FullName:  fakeUser.FullName,
+			Username:  fakeUser.Username,
+			Email:     fakeUser.Email,
+			Password:  fakeUser.Password,
+			Role:      user_entity.RoleAdmin,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+
 		users = append(users, user)
 	}
 	faker.ResetUnique()
