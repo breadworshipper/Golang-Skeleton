@@ -1,15 +1,16 @@
 package middleware
 
 import (
+	"mm-pddikti-cms/internal/module/user/entity"
 	"mm-pddikti-cms/pkg/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
 
-func AuthRole(authorizedRoles []string) func(*fiber.Ctx) error {
+func AuthRole(authorizedRoles []entity.Role) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		role, ok := c.Locals("role").(string)
+		role, ok := c.Locals("role").(entity.Role)
 		if !ok {
 			return response.SendResponse(c, response.ResponseParams{
 				StatusCode: fiber.StatusForbidden,
@@ -25,8 +26,8 @@ func AuthRole(authorizedRoles []string) func(*fiber.Ctx) error {
 		}
 
 		payload := struct {
-			Role           string   `json:"role"`
-			AuthorizedRole []string `json:"authorized_roles"`
+			Role           entity.Role   `json:"role"`
+			AuthorizedRole []entity.Role `json:"authorized_roles"`
 		}{
 			Role:           role,
 			AuthorizedRole: authorizedRoles,
