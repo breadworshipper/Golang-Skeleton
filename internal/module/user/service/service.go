@@ -1,15 +1,36 @@
 package service
 
-import "mm-pddikti-cms/internal/module/z_template_v2/ports"
+import (
+	"context"
+	"errors"
+	"mm-pddikti-cms/internal/module/user/entity"
+	"mm-pddikti-cms/internal/module/user/ports"
 
-var _ ports.XxxService = &xxxService{}
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
-type xxxService struct {
-	repo ports.XxxRepository
+var _ ports.UserService = (*userService)(nil)
+
+type userService struct {
+	repo ports.UserRepository
 }
 
-func NewXxxService(repo ports.XxxRepository) *xxxService {
-	return &xxxService{
+func NewUserService(repo ports.UserRepository) ports.UserService {
+	return &userService{
 		repo: repo,
 	}
+}
+
+func (s *userService) Profile(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+	user, err := s.repo.FindUserByID(ctx, id)
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, errors.New("User not found!")
+		}
+		return nil, err
+	}
+
+	return user, nil
 }

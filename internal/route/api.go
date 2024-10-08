@@ -4,6 +4,9 @@ import (
 	// integlocalstorage "mm-pddikti-cms/internal/integration/localstorage"
 	// m "mm-pddikti-cms/internal/middleware"
 
+	auth "mm-pddikti-cms/internal/module/auth/handler/rest"
+	user "mm-pddikti-cms/internal/module/user/handler/rest"
+
 	"mm-pddikti-cms/pkg/response"
 	"os"
 	"path/filepath"
@@ -12,11 +15,26 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func SetupRoutes(app *fiber.App) {
+func SetupRoutes(app *fiber.App, authHandler *auth.AuthHandler, userHandler *user.UserHandler) {
 
 	// add /api prefix to all routes
 	// app.Get("/storage/private/:filename", m.ValidateSignedURL, storageFile)
-	// api := app.Group("/api")
+
+	app.Get("/csrf-token", func(c *fiber.Ctx) error {
+		csrfToken := c.Locals("csrf")
+		if csrfToken == nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": "CSRF token not found",
+			})
+		}
+		return c.JSON(fiber.Map{
+			"csrfToken": csrfToken,
+		})
+	})
+	
+	api := app.Group("/api")
+	SetupAuthRoutes(api, authHandler)
+	SetupUserRoutes(api, userHandler)
 
 	// fallback route
 	app.Use(func(c *fiber.Ctx) error {
@@ -35,7 +53,10 @@ func SetupRoutes(app *fiber.App) {
 			Str("ua", ua).
 			Str("ip", ip).
 			Msg("Route not found.")
-		return c.Status(fiber.StatusNotFound).JSON(response.Error("Route not found"))
+		return response.SendResponse(c, response.ResponseParams{
+			StatusCode: fiber.StatusNotFound,
+			Message:    "Route not found",
+		})
 	})
 }
 
@@ -47,13 +68,19 @@ func storageFile(c *fiber.Ctx) error {
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		log.Error().Err(err).Any("url", filePath).Msg("handler::storageFile - File not found")
-		return c.Status(fiber.StatusNotFound).JSON(response.Error("File not found"))
+		return response.SendResponse(c, response.ResponseParams{
+			StatusCode: fiber.StatusNotFound,
+			Message:    "File not found",
+		})
 	}
 
 	fileBytes, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Error().Err(err).Any("url", filePath).Msg("handler::storageFile - Failed to read file")
-		return c.Status(fiber.StatusInternalServerError).JSON(response.Error(err.Error()))
+		return response.SendResponse(c, response.ResponseParams{
+			StatusCode: fiber.StatusInternalServerError,
+			Message:    err.Error(),
+		})
 	}
 
 	return c.Send(fileBytes)

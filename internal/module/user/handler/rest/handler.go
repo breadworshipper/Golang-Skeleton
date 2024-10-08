@@ -1,14 +1,41 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"context"
+	"mm-pddikti-cms/internal/module/user/ports"
+	"mm-pddikti-cms/pkg/response"
+	"time"
 
-type xxxHandler struct {
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
+)
+
+type UserHandler struct {
+	userService ports.UserService
 }
 
-func NewXXXHandler() *xxxHandler {
-	return &xxxHandler{}
+func NewUserHandler(userService ports.UserService) *UserHandler {
+	return &UserHandler{
+		userService: userService,
+	}
 }
 
-func (h *xxxHandler) Register(router fiber.Router) {
+func (h *UserHandler) Profile(ctx *fiber.Ctx) error {
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(5)*time.Second)
+	defer cancel()
 
+	id := ctx.Locals("user_id").(uuid.UUID)
+
+	user, err := h.userService.Profile(context, id)
+	if err != nil {
+		return response.SendResponse(ctx, response.ResponseParams{
+			StatusCode: fiber.StatusNotFound,
+			Message:    err.Error(),
+		})
+	}
+
+	return response.SendResponse(ctx, response.ResponseParams{
+		StatusCode: fiber.StatusAccepted,
+		Data:       user,
+	})
 }
