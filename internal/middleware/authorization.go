@@ -1,20 +1,21 @@
 package middleware
 
 import (
+	"mm-pddikti-cms/pkg/response"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
 )
 
 func AuthRole(authorizedRoles []string) func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		forbiddenResponse := fiber.Map{
-			"message": "Terlarang: role anda tidak diizinkan untuk mengakses resource ini",
-			"success": false,
-		}
-
 		role, ok := c.Locals("role").(string)
 		if !ok {
-			return c.Status(fiber.StatusForbidden).JSON(forbiddenResponse)
+			return response.SendResponse(c, response.ResponseParams{
+				StatusCode: fiber.StatusForbidden,
+				Message:    "Terlarang: role anda tidak diizinkan untuk mengakses resource ini",
+			})
+
 		}
 
 		for _, authorizedRole := range authorizedRoles {
@@ -32,6 +33,9 @@ func AuthRole(authorizedRoles []string) func(*fiber.Ctx) error {
 		}
 
 		log.Warn().Any("payload", payload).Msg("middleware::AuthRole - Unauthorized")
-		return c.Status(fiber.StatusForbidden).JSON(forbiddenResponse)
+		return response.SendResponse(c, response.ResponseParams{
+			StatusCode: fiber.StatusForbidden,
+			Message:    "Terlarang: role anda tidak diizinkan untuk mengakses resource ini",
+		})
 	}
 }

@@ -14,7 +14,7 @@ func Csrf() func(*fiber.Ctx) error {
 		// KeyLookup:      "cookie:" + config.AppConfig.Application.Session.Key, // Recommended to use the __Host- prefix when serving the app over TLS
 		KeyLookup:      "cookie:session_csrf", // Recommended to use the __Host- prefix when serving the app over TLS
 		Expiration:     time.Duration(120) * time.Minute,
-		CookieSecure:   true,
+		CookieSecure:   false,
 		CookieHTTPOnly: true,
 		CookieSameSite: "Lax",
 	}
@@ -23,7 +23,7 @@ func Csrf() func(*fiber.Ctx) error {
 		KeyLookup:         "header:X-Csrf-Token",
 		CookieName:        "csrf_",
 		CookieSameSite:    "Lax",
-		CookieSecure:      true,
+		CookieSecure:      false,
 		ContextKey:        "csrf",
 		CookieSessionOnly: true,
 		CookieHTTPOnly:    true,
@@ -49,6 +49,6 @@ func Csrf() func(*fiber.Ctx) error {
 		// 		})
 		// },
 	}
-	
+
 	return csrf.New(csrfConfig)
 }

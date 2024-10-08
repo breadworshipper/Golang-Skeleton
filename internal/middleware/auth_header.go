@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"mm-pddikti-cms/pkg/jwthandler"
+	"mm-pddikti-cms/pkg/response"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/zerolog/log"
@@ -9,15 +10,14 @@ import (
 
 func AuthBearer(c *fiber.Ctx) error {
 	AccessToken := c.Get("Authorization")
-	unauthorizedResponse := fiber.Map{
-		"message": "Unauthorized",
-		"success": false,
-	}
 
 	// If the cookie is not set, return an unauthorized status
 	if AccessToken == "" {
 		log.Error().Msg("middleware::AuthMiddleware - Unauthorized [Header not set]")
-		return c.Status(fiber.StatusUnauthorized).JSON(unauthorizedResponse)
+		return response.SendResponse(c, response.ResponseParams{
+			StatusCode: fiber.StatusUnauthorized,
+			Message:    "Unauthorized",
+		})
 	}
 
 	// remove the Bearer prefix
@@ -29,7 +29,10 @@ func AuthBearer(c *fiber.Ctx) error {
 	claims, err := jwthandler.ParseTokenString(AccessToken)
 	if err != nil {
 		log.Error().Err(err).Any("payload", AccessToken).Msg("middleware::AuthMiddleware - Error while parsing token")
-		return c.Status(fiber.StatusUnauthorized).JSON(unauthorizedResponse)
+		return response.SendResponse(c, response.ResponseParams{
+			StatusCode: fiber.StatusUnauthorized,
+			Message:    "Unauthorized",
+		})
 	}
 
 	c.Locals("user_id", claims.UserId)
