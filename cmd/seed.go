@@ -16,12 +16,12 @@ func RunSeed(cmd *flag.FlagSet, args []string) {
 		log.Fatal().Err(err).Msg("Error while parsing flags")
 	}
 
-	tables := args
-	log.Info().Msg(strings.Join(tables, ", "))
-
+	tables := cmd.Args()
 	if len(tables) == 0 {
 		log.Fatal().Msg("No tables provided for seeding")
 	}
+
+	log.Info().Msg(strings.Join(tables, ", "))
 
 	adapter.Adapters.Sync(adapter.Postgres())
 	defer func() {

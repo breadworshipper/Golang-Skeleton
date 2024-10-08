@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"math/rand"
 	"mm-pddikti-cms/internal/adapter"
+	user_entity "mm-pddikti-cms/internal/module/user/entity"
 	"mm-pddikti-cms/pkg"
 	"os"
 	"strings"
 
+	"github.com/go-faker/faker/v4"
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
@@ -52,7 +55,8 @@ func Execute(db *gorm.DB, table string, total int) {
 func (s *Seed) run(table string, total int) {
 	switch table {
 	case "users":
-		s.usersSeed(total)
+		s.superAdminUserSeed()
+		s.adminUsersSeed(total)
 	case "histories":
 		s.historiesSeed()
 	case "announcements":
@@ -60,7 +64,8 @@ func (s *Seed) run(table string, total int) {
 	case "activities":
 		s.activitiesSeed()
 	case "all":
-		s.usersSeed(total)
+		s.superAdminUserSeed()
+		s.adminUsersSeed(total)
 		s.historiesSeed()
 		s.announcementsSeed()
 		s.activitiesSeed()
@@ -189,8 +194,13 @@ func (s *Seed) announcementsSeed() {
 	log.Info().Msg("announcement table seed success")
 }
 
-// users
-func (s *Seed) usersSeed(total int) {
+func (s *Seed) superAdminUserSeed() {
+	var count int64
+	s.db.Model(&user_entity.User{}).Where("role = ?", user_entity.RoleSuperAdmin).Count(&count)
+	if count > 0 {
+		log.Info().Msg("Super admin already seeded")
+		return
+	}
 
 	tx := s.db.Begin()
 	if tx.Error != nil {
@@ -198,34 +208,81 @@ func (s *Seed) usersSeed(total int) {
 		return
 	}
 
-	// Constructing user data
-	var users []string
-	for i := 1; i <= total; i++ {
-		fullname := fmt.Sprintf("User%d", i)          // Example name
-		username := fmt.Sprintf("user%d", i)          // Example username
-		email := fmt.Sprintf("user%d@example.com", i) // Example email
-		password := "password"                        // Placeholder password
-		hashedPassword, _ := pkg.HashPassword(password)
-		role := "admin" // Placeholder role
-		users = append(users, fmt.Sprintf("('%s', '%s', '%s', '%s', '%s')", fullname, username, email, hashedPassword, role))
-	}
-
-	// Construct the query
-	query := fmt.Sprintf("INSERT INTO users (full_name, username, email, password, role) VALUES %s",
-		strings.Join(users, ", "))
-
-	// Execute the INSERT query
-	err := tx.Exec(query).Error
+	newUUID, err := uuid.NewUUID()
 	if err != nil {
-		log.Info().Msg("users table seed failed: " + err.Error())
-		tx.Rollback() // Rollback on error
+		log.Info().Msg("Failed to generate UUID")
 		return
 	}
 
-	// If no error, commit the transaction
+	password, err := pkg.HashPassword("superadmin")
+	if err != nil {
+		log.Info().Msg("Failed to hash password")
+		return
+	}
+
+	err = tx.Create(&user_entity.User{
+		ID:       newUUID,
+		FullName: "Super Admin",
+		Username: "superadmin",
+		Email:    "superadmin@cms.pddikti.kemdikbud.go.id",
+		Password: password,
+		Role:     user_entity.RoleSuperAdmin,
+	}).Error
+	if err != nil {
+		log.Info().Msg("users table (super-admin) seed failed: " + err.Error())
+		tx.Rollback()
+		return
+	}
+
 	if err := tx.Commit().Error; err != nil {
 		log.Info().Msg("Commit failed: " + err.Error())
 		return
 	}
-	log.Info().Msg("users table seed success")
+
+	log.Info().Msg("users table (super-admin) seed success")
+}
+
+func (s *Seed) adminUsersSeed(total int) {
+	type User struct {
+		ID        string `faker:"uuid_hyphenated"`
+		FullName  string `faker:"name"`
+		Username  string `faker:"username,unique"`
+		Email     string `faker:"email,unique"`
+		Password  string `faker:"password"`
+		Role      user_entity.Role
+		CreatedAt string `faker:"timestamp"`
+		UpdateAt  string `faker:"timestamp"`
+	}
+
+	var users []User
+	for i := 1; i <= total; i++ {
+		user := User{}
+		err := faker.FakeData(&user)
+		if err != nil {
+			fmt.Println(err)
+		}
+		user.Role = user_entity.RoleAdmin
+		users = append(users, user)
+	}
+	faker.ResetUnique()
+
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		log.Info().Msg("Failed to begin transaction")
+		return
+	}
+
+	err := tx.Create(&users).Error
+	if err != nil {
+		log.Info().Msg("users table (admin) seed failed: " + err.Error())
+		tx.Rollback()
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		log.Info().Msg("Commit failed: " + err.Error())
+		return
+	}
+
+	log.Info().Msg("users table (admin) seed success")
 }
