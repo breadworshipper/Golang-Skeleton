@@ -5,6 +5,7 @@ import (
 	"mm-pddikti-cms/internal/adapter"
 	"mm-pddikti-cms/internal/infrastructure"
 	"mm-pddikti-cms/internal/infrastructure/config"
+	"mm-pddikti-cms/internal/middleware"
 	"mm-pddikti-cms/internal/route"
 	"os"
 	"os/signal"
@@ -71,6 +72,8 @@ func RunServer(cmd *flag.FlagSet, args []string) {
 		AllowMethods: "GET,POST,PUT,DELETE,PATCH,OPTIONS,HEAD",
 		AllowHeaders: "Origin,Content-Type,Accept,Content-Length,Accept-Language,Accept-Encoding,Connection,Access-Control-Allow-Origin,Authorization",
 	}))
+
+	app.Use(middleware.Csrf())
 	// End Application Middlewares
 
 	adapter.Adapters.Sync(
