@@ -1,8 +1,11 @@
 package seeds
 
 import (
+	"fmt"
+	"math/rand"
 	"mm-pddikti-cms/internal/adapter"
 	"os"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
@@ -12,6 +15,25 @@ import (
 type Seed struct {
 	db *gorm.DB
 }
+
+// var uuids = []string{
+// 	"550e8400-e29b-41d4-a716-446655440000",
+// 	"550e8400-e29b-41d4-a716-446655440001",
+// 	"550e8400-e29b-41d4-a716-446655440002",
+// 	"550e8400-e29b-41d4-a716-446655440003",
+// 	"550e8400-e29b-41d4-a716-446655440004",
+// 	"550e8400-e29b-41d4-a716-446655440005",
+// 	"550e8400-e29b-41d4-a716-446655440006",
+// 	"550e8400-e29b-41d4-a716-446655440007",
+// 	"550e8400-e29b-41d4-a716-446655440008",
+// 	"550e8400-e29b-41d4-a716-446655440009",
+// 	"550e8400-e29b-41d4-a716-446655440010",
+// 	"550e8400-e29b-41d4-a716-446655440011",
+// 	"550e8400-e29b-41d4-a716-446655440012",
+// 	"550e8400-e29b-41d4-a716-446655440013",
+// }
+
+var uuidBase = "550e8400-e29b-41d4-a716-4466554400"
 
 // NewSeed return a Seed with a pool of connection to a dabase.
 func newSeed(db *gorm.DB) Seed {
@@ -28,12 +50,19 @@ func Execute(db *gorm.DB, table string, total int) {
 // Run seeds.
 func (s *Seed) run(table string, total int) {
 	switch table {
-	case "roles":
-		s.rolesSeed()
+	case "users":
 		s.usersSeed(total)
+	case "histories":
+		s.historiesSeed()
+	case "announcements":
+		s.announcementsSeed()
+	case "activities":
+		s.activitiesSeed()
 	case "all":
-		s.rolesSeed()
 		s.usersSeed(total)
+		s.historiesSeed()
+		s.announcementsSeed()
+		s.activitiesSeed()
 	case "delete-all":
 		s.deleteAll()
 	default:
@@ -51,180 +80,150 @@ func (s *Seed) run(table string, total int) {
 }
 
 func (s *Seed) deleteAll() {
-	// tx, err := s.db.BeginTxx(context.Background(), nil)
-	// if err != nil {
-	// 	log.Error().Err(err).Msg("Error starting transaction")
-	// 	return
-	// }
-	// defer func() {
-	// 	if err != nil {
-	// 		err = tx.Rollback()
-	// 		log.Error().Err(err).Msg("Error rolling back transaction")
-	// 		return
-	// 	} else {
-	// 		err = tx.Commit()
-	// 		if err != nil {
-	// 			log.Error().Err(err).Msg("Error committing transaction")
-	// 		}
-	// 	}
-	// }()
 
-	// _, err = tx.Exec(`DELETE FROM users`)
-	// if err != nil {
-	// 	log.Error().Err(err).Msg("Error deleting users")
-	// 	return
-	// }
-	// log.Info().Msg("users table deleted successfully")
-
-	// _, err = tx.Exec(`DELETE FROM roles`)
-	// if err != nil {
-	// 	log.Error().Err(err).Msg("Error deleting roles")
-	// 	return
-	// }
-	// log.Info().Msg("roles table deleted successfully")
-
-	// log.Info().Msg("=== All tables deleted successfully ===")
 }
 
-// rolesSeed seeds the roles table.
-// func (s *Seed) rolesSeed() {
-// 	roles := []entity.Role{
-// 		{Name: "super-admin"},
-// 		{Name: "admin", },
-// 		{Name: "guest", },
-// 	}
+func (s *Seed) historiesSeed() {
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		log.Info().Msg("Failed to begin transaction")
+		return
+	}
 
-// roleMaps := []map[string]any{
-// 	{"id": "01J3VHA25R8KTG9MQX43KBZ9MW", "name": "admin"},
-// 	{"id": "01J3VHA25R8KTG9MQX47GRF4KW", "name": "end_user"},
-// }
+	var histories []string
+	for i := 1; i <= 15; i++ {
+		user_id := fmt.Sprintf("%s%d", uuidBase, i)
+		actions := []string{"create", "update", "delete"}
+		action := actions[rand.Intn(len(actions))]
+		entities := []string{"announcement", "history", "activity"}
+		entity_name := entities[rand.Intn(len(entities))]
+		entity_id := fmt.Sprintf("%s%d", uuidBase, i)
 
-// tx, err := s.db.BeginTxx(context.Background(), nil)
-// if err != nil {
-// 	log.Error().Err(err).Msg("Error starting transaction")
-// 	return
-// }
-// defer func() {
-// 	if err != nil {
-// 		err = tx.Rollback()
-// 		log.Error().Err(err).Msg("Error rolling back transaction")
-// 		return
-// 	}
-// 	err = tx.Commit()
-// 	if err != nil {
-// 		log.Error().Err(err).Msg("Error committing transaction")
-// 	}
-// }()
+		histories = append(histories, fmt.Sprintf("(%v, %v, %v, %v)", user_id, action, entity_name, entity_id))
+	}
 
-// // Ubah jadi gorm
-// _, err = tx.NamedExec(`
-// 	INSERT INTO roles (id, name)
-// 	VALUES (:id, :name)
-// `, roleMaps)
-// if err != nil {
-// 	log.Error().Err(err).Msg("Error creating roles")
-// 	return
-// }
+	query := fmt.Sprintf("INSERT INTO histories (user_id, action, entity_name) VALUES %s",
+		strings.Join(histories, ", "))
 
-// log.Info().Msg("roles table seeded successfully")
-// }
+	err := tx.Exec(query).Error
+	if err != nil {
+		log.Info().Msg("histories table seed failed: " + err.Error())
+		tx.Rollback() // Rollback on error
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		log.Info().Msg("Commit failed: " + err.Error())
+		return
+	}
+
+	log.Info().Msg("histories table seed success")
+}
+
+func (s *Seed) activitiesSeed() {
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		log.Info().Msg("Failed to begin transaction")
+		return
+	}
+
+	var activities []string
+	for i := 1; i <= 15; i++ {
+		title := fmt.Sprintf("Activity Title %d", i)
+		slug := fmt.Sprintf("activity-title-%d", i)
+		content := fmt.Sprintf("this is content for activity-%d", i)
+		thumbnail := fmt.Sprintf("This is description for title %d", i)
+
+		activities = append(activities, fmt.Sprintf("(%v, %v, %v, %v)", title, slug, content, thumbnail))
+	}
+
+	query := fmt.Sprintf("INSERT INTO activities (title, slug, content, thumbnail) VALUES %s",
+		strings.Join(activities, ","))
+
+	err := tx.Exec(query).Error
+	if err != nil {
+		log.Info().Msg("activities table seed failed: " + err.Error())
+		tx.Rollback() // Rollback on error
+		return
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		log.Info().Msg("Commit failed: " + err.Error())
+		return
+	}
+
+	log.Info().Msg("activities table seed success")
+}
+
+func (s *Seed) announcementsSeed() {
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		log.Info().Msg("Failed to begin transaction")
+		return
+	}
+	var announcements []string
+	for i := 1; i <= 15; i++ {
+		title := fmt.Sprintf("Announcement Title %d", i)
+		slug := fmt.Sprintf("announcement-title-%d", i)
+		link := fmt.Sprintf("http://link-to-title-%d", i)
+		description := fmt.Sprintf("This is description for announcement %d", i)
+
+		announcements = append(announcements, fmt.Sprintf("(%v, %v, %v, %v)", title, slug, link, description))
+	}
+
+	query := fmt.Sprintf("INSERT INTO announcements (title, slug, link, description) VALUES %s",
+		strings.Join(announcements, ","))
+
+	err := tx.Exec(query).Error
+	if err != nil {
+		log.Info().Msg("announcement table seed failed: " + err.Error())
+		tx.Rollback() // Rollback on error
+		return
+	}
+	if err := tx.Commit().Error; err != nil {
+		log.Info().Msg("Commit failed: " + err.Error())
+		return
+	}
+
+	log.Info().Msg("announcement table seed success")
+}
 
 // users
 func (s *Seed) usersSeed(total int) {
-	// 	tx, err := s.db.BeginTxx(context.Background(), nil)
-	// 	if err != nil {
-	// 		log.Error().Err(err).Msg("Error starting transaction")
-	// 		return
-	// 	}
-	// 	defer func() {
-	// 		if err != nil {
-	// 			err = tx.Rollback()
-	// 			log.Error().Err(err).Msg("Error rolling back transaction")
-	// 			return
-	// 		}
 
-	// 		err = tx.Commit()
-	// 		if err != nil {
-	// 			log.Error().Err(err).Msg("Error committing transaction")
-	// 		}
-	// 	}()
+	tx := s.db.Begin()
+	if tx.Error != nil {
+		log.Info().Msg("Failed to begin transaction")
+		return
+	}
 
-	// 	type generalData struct {
-	// 		Id   string `db:"id"`
-	// 		Name string `db:"name"`
-	// 	}
+	// Constructing user data
+	var users []string
+	for i := 1; i <= total; i++ {
+		fullname := fmt.Sprintf("User%d", i)          // Example name
+		username := fmt.Sprintf("user%d", i)          // Example username
+		email := fmt.Sprintf("user%d@example.com", i) // Example email
+		password := "password"                        // Placeholder password
+		role := "admin"                               // Placeholder role
+		users = append(users, fmt.Sprintf("('%s', '%s', '%s', '%s', '%s')", fullname, username, email, password, role))
+	}
 
-	// 	var (
-	// 		roles    = make([]generalData, 0)
-	// 		userMaps = make([]map[string]any, 0)
-	// 	)
+	// Construct the query
+	query := fmt.Sprintf("INSERT INTO users (fullname, username, email, password, role) VALUES %s",
+		strings.Join(users, ", "))
 
-	// 	err = s.db.Select(&roles, `SELECT id, name FROM roles`)
-	// 	if err != nil {
-	// 		log.Error().Err(err).Msg("Error selecting roles")
-	// 		return
-	// 	}
+	// Execute the INSERT query
+	err := tx.Exec(query).Error
+	if err != nil {
+		log.Info().Msg("users table seed failed: " + err.Error())
+		tx.Rollback() // Rollback on error
+		return
+	}
 
-	// 	for i := 0; i < total; i++ {
-	// 		selectedRole := roles[gofakeit.Number(0, len(roles)-1)]
-
-	// 		dataUserToInsert := make(map[string]any)
-	// 		dataUserToInsert["id"] = ulid.Make().String()
-	// 		dataUserToInsert["role_id"] = selectedRole.Id
-	// 		dataUserToInsert["name"] = gofakeit.Name()
-	// 		dataUserToInsert["email"] = gofakeit.Email()
-	// 		dataUserToInsert["whatsapp_number"] = gofakeit.Phone()
-	// 		dataUserToInsert["password"] = "$2y$10$mVf4BKsfPSh/pjgHjvk.JOlGdkIYgBGyhaU9WQNMWpYskK9MZlb0G" // password
-
-	// 		userMaps = append(userMaps, dataUserToInsert)
-	// 	}
-
-	// 	var (
-	// 		endUserId   string
-	// 		adminUserId string
-	// 	)
-
-	// 	// iterate over roles to get service advisor id
-	// 	for _, role := range roles {
-	// 		if role.Name == "admin" {
-	// 			adminUserId = role.Id
-	// 			continue
-	// 		}
-	// 		if role.Name == "end_user" {
-	// 			endUserId = role.Id
-	// 			continue
-	// 		}
-	// 	}
-
-	// 	EndUser := map[string]any{
-	// 		"id":              ulid.Make().String(),
-	// 		"role_id":         endUserId,
-	// 		"name":            "Irham",
-	// 		"email":           "irham@fake.com",
-	// 		"whatsapp_number": gofakeit.Phone(),
-	// 		"password":        "$2y$10$mVf4BKsfPSh/pjgHjvk.JOlGdkIYgBGyhaU9WQNMWpYskK9MZlb0G", // password
-	// 	}
-
-	// 	AdminUser := map[string]any{
-	// 		"id":              ulid.Make().String(),
-	// 		"role_id":         adminUserId,
-	// 		"name":            "Fathan",
-	// 		"email":           "fathan@fake.com",
-	// 		"whatsapp_number": gofakeit.Phone(),
-	// 		"password":        "$2y$10$mVf4BKsfPSh/pjgHjvk.JOlGdkIYgBGyhaU9WQNMWpYskK9MZlb0G", // password
-	// 	}
-
-	// 	userMaps = append(userMaps, EndUser)
-	// 	userMaps = append(userMaps, AdminUser)
-
-	// 	_, err = tx.NamedExec(`
-	// 		INSERT INTO users (id, role_id, name, email, whatsapp_number, password)
-	// 		VALUES (:id, :role_id, :name, :email, :whatsapp_number, :password)
-	// 	`, userMaps)
-	// 	if err != nil {
-	// 		log.Error().Err(err).Msg("Error creating users")
-	// 		return
-	// 	}
-
-	// log.Info().Msg("users table seeded successfully")
+	// If no error, commit the transaction
+	if err := tx.Commit().Error; err != nil {
+		log.Info().Msg("Commit failed: " + err.Error())
+		return
+	}
+	log.Info().Msg("users table seed success")
 }
