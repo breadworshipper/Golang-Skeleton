@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -52,19 +53,19 @@ func (s *Seed) run(table string, total int) {
 	switch table {
 	case "users":
 		s.usersSeed(total)
-	case "histories":
-		s.historiesSeed()
-	case "announcements":
-		s.announcementsSeed()
-	case "activities":
-		s.activitiesSeed()
-	case "all":
-		s.usersSeed(total)
-		s.historiesSeed()
-		s.announcementsSeed()
-		s.activitiesSeed()
-	case "delete-all":
-		s.deleteAll()
+	// case "histories":
+	// 	s.historiesSeed()
+	// case "announcements":
+	// 	s.announcementsSeed()
+	// case "activities":
+	// 	s.activitiesSeed()
+	// case "all":
+	// 	s.usersSeed(total)
+	// 	s.historiesSeed()
+	// 	s.announcementsSeed()
+	// 	s.activitiesSeed()
+	// case "delete-all":
+	// 	s.deleteAll()
 	default:
 		log.Warn().Msg("No seed to run")
 	}
@@ -204,12 +205,13 @@ func (s *Seed) usersSeed(total int) {
 		username := fmt.Sprintf("user%d", i)          // Example username
 		email := fmt.Sprintf("user%d@example.com", i) // Example email
 		password := "password"                        // Placeholder password
-		role := "admin"                               // Placeholder role
-		users = append(users, fmt.Sprintf("('%s', '%s', '%s', '%s', '%s')", fullname, username, email, password, role))
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		role := "admin" // Placeholder role
+		users = append(users, fmt.Sprintf("('%s', '%s', '%s', '%s', '%s')", fullname, username, email, hashedPassword, role))
 	}
 
 	// Construct the query
-	query := fmt.Sprintf("INSERT INTO users (fullname, username, email, password, role) VALUES %s",
+	query := fmt.Sprintf("INSERT INTO users (full_name, username, email, password, role) VALUES %s",
 		strings.Join(users, ", "))
 
 	// Execute the INSERT query

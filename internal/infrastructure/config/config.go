@@ -18,10 +18,8 @@ type Config struct {
 		Environtment            string `env:"APP_ENV" env-default:"production"`
 		BaseURL                 string `env:"APP_BASE_URL" env-default:"http://localhost:3000"`
 		Port                    string `env:"APP_PORT"`
-		WSPort                  string `env:"WS_PORT"`
 		LogLevel                string `env:"APP_LOG_LEVEL" env-default:"debug"`
 		LogFile                 string `env:"APP_LOG_FILE" env-default:"./logs/app.log"`
-		LogFileWs               string `env:"APP_LOG_FILE_WS" env-default:"./logs/ws.log"`
 		LocalStoragePublicPath  string `env:"LOCAL_STORAGE_PUBLIC_PATH" env-default:"./storage/public"`
 		LocalStoragePrivatePath string `env:"LOCAL_STORAGE_PRIVATE_PATH" env-default:"./storage/private"`
 	}
@@ -32,9 +30,9 @@ type Config struct {
 		ConnMaxLifetime   int `env:"DB_CONN_MAX_LIFETIME" env-default:"0" env-description:"database conn max lifetime in seconds"`
 	}
 	Guard struct {
-		JwtPrivateKey   string `env:"JWT_PRIVATE_KEY"`
-		JwtPrivateKeyWs string `env:"JWT_PRIVATE_KEY_WS"`
-		JwtWsExp        int    `env:"JWT_WS_EXP" env-default:"10"` // 10 seconds
+		JwtPrivateKey             string `env:"JWT_PRIVATE_KEY"`
+		JwtAccessTokenExpiration  int    `env:"JWT_ACCESS_TOKEN_EXPIRATION" env-default:"24"`   // in hours
+		JwtRefreshTokenExpiration int    `env:"JWT_REFRESH_TOKEN_EXPIRATION" env-default:"120"` // in hours
 	}
 	Postgres struct {
 		Host     string `env:"POSTGRES_HOST" env-default:"localhost"`
@@ -50,13 +48,7 @@ type Config struct {
 		Endpoint string `env:"STORAGE_ENDPOINT"`
 		Region   string `env:"STORAGE_REGION"`
 		Bucket   string `env:"STORAGE_BUCKET"`
-	}
-	Oauth struct {
-		Google struct {
-			ClientId     string `env:"GOOGLE_CLIENT_ID"`
-			ClientSecret string `env:"GOOGLE_CLIENT_SECRET"`
-			RedirectURL  string `env:"GOOGLE_REDIRECT_URL"`
-		}
+		useSSL   bool   `env:"STORAGE_USE_SSL" env-default:"false"`
 	}
 }
 

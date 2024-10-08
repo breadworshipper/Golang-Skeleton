@@ -6,6 +6,8 @@ import (
 	"mm-pddikti-cms/internal/infrastructure"
 	"mm-pddikti-cms/internal/infrastructure/config"
 	"mm-pddikti-cms/internal/middleware"
+	"mm-pddikti-cms/internal/module/auth"
+	"mm-pddikti-cms/internal/module/user"
 	"mm-pddikti-cms/internal/route"
 	"os"
 	"os/signal"
@@ -92,7 +94,13 @@ func RunServer(cmd *flag.FlagSet, args []string) {
 
 	infrastructure.InitializeLogger(envs.App.Environtment, envs.App.LogFile, logLevel)
 	app.Get("/metrics", monitor.New(monitor.Config{Title: config.Envs.App.Name + config.Envs.App.Environtment + " Metrics"}))
-	route.SetupRoutes(app)
+
+	// Setup Modules
+	authHandler := auth.Init()
+	userHandler := user.Init()
+
+	// Setup Routes
+	route.SetupRoutes(app, authHandler, userHandler)
 
 	// Run server in goroutine
 	go func() {

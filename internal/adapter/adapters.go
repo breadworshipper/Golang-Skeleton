@@ -2,7 +2,7 @@ package adapter
 
 import (
 	"fmt"
-	"net/http"
+	"mm-pddikti-cms/pkg/response"
 	"strings"
 
 	// import "mm-pddikti-cms/internal/pkg/validator"
@@ -24,13 +24,12 @@ type Option interface {
 }
 
 type Validator interface {
-	Validate(i any) []ErrorResponse
+	Validate(i any) []response.ErrorValidation
 }
 
 type Adapter struct {
 	// Driving Adapters
 	RestServer *fiber.App
-	WsServer   *http.Server
 
 	//Driven Adapters
 	Postgres  *gorm.DB

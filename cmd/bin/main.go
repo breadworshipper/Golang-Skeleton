@@ -17,7 +17,6 @@ func main() {
 
 	serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
 	seedCmd := flag.NewFlagSet("seed", flag.ExitOnError)
-	// wsCmd := flag.NewFlagSet("ws", flag.ExitOnError)
 
 	if len(os.Args) < 2 {
 		log.Info().Msg("No command provided, defaulting to 'server'")
@@ -30,8 +29,8 @@ func main() {
 		cmd.RunSeed(seedCmd, os.Args[2:])
 	case "server":
 		cmd.RunServer(serverCmd, os.Args[2:])
-	// case "ws":
-	// 	cmd.RunWebsocket(wsCmd, os.Args[2:])
+	case "migrate":
+		cmd.RunMigrate()
 	default:
 		log.Info().Msg("Invalid command provided, defaulting to 'server' with provided flags")
 		if os.Args[1][0] == '-' { // check if the first argument is a flag
