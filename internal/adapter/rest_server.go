@@ -16,6 +16,8 @@ func RestServer(app *fiber.App) Option {
 
 func (r *restServer) Start(a *Adapter) {
 	a.RestServer = r.app
+	r.adapter = a
+
 	log.Info().Msg("Rest server connected")
 }
 
