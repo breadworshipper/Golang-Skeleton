@@ -16,11 +16,11 @@ const (
 type User struct {
 	ID        uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primary_key"`
 	FullName  string
-	Username  string    `gorm:"unique"`
-	Email     string    `gorm:"unique"`
+	Username  string `gorm:"unique"`
+	Email     string `gorm:"unique"`
 	Password  string
 	Role      Role
 	CreatedAt time.Time
-	UpdateAt  time.Time
+	UpdatedAt time.Time
 	DeletedAt *time.Time
 }
