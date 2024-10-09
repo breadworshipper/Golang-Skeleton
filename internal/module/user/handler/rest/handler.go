@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"mm-pddikti-cms/internal/module/user/entity"
 	"mm-pddikti-cms/internal/module/user/ports"
 	"mm-pddikti-cms/pkg/response"
 	"time"
@@ -34,8 +35,9 @@ func (h *UserHandler) Profile(ctx *fiber.Ctx) error {
 		})
 	}
 
+	responseDTO := entity.ToUserResponseDTO(*user)
 	return response.SendResponse(ctx, response.ResponseParams{
 		StatusCode: fiber.StatusAccepted,
-		Data:       user,
+		Data:       responseDTO,
 	})
 }
